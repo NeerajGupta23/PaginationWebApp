@@ -54,20 +54,20 @@
             color: rgb(250, 224, 253);
         }
 
-        /* css for index */
+        /* Paging Index css */
         #page_index {
-            width: 41%;
-            margin: auto;
-            border: 2px solid red;
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
 
         .svg_arrow_div {
             display: inline;
             background-color: rgba(251, 0, 0, 0.72);
             border-radius: 100px;
-            margin: 8px;
             padding: 12px 11px;
             opacity: 0.8;
+            margin: 0%;
         }
 
         .arrow_mid {
@@ -76,24 +76,61 @@
             display: inline;
             border-radius: 40px;
             padding: 10px 0px;
+            margin: 0% 10px;
         }
 
         .arrow_mid li {
             display: inline;
             margin: 0px;
-            border-radius: 40px;
-            padding: 15px 20px;
+            border-radius: 50px;
+            padding: 20px 25px;
         }
 
-        #one {
+        #between {
             border: 2px solid rgba(251, 0, 0, 0.72);
         }
     </style>
+    
+	<c:if test="${sessionScope.totalPages le 6}">	
+		<style>
+	        .arrow_mid li:nth-child(${sessionScope.currPageNo + 1}) {
+	   	        border: 2px solid rgba(251, 0, 0, 0.72);
+	       	}	
+		</style>        
+	</c:if>
+	<c:if test="${sessionScope.totalPages gt 6 and sessionScope.currPageNo+1 le 3}">	
+		<style>
+	        .arrow_mid li:nth-child(${sessionScope.currPageNo + 1}) {
+	   	        border: 2px solid rgba(251, 0, 0, 0.72);
+	       	}	
+		</style>        
+	</c:if>
+	<c:if test="${sessionScope.totalPages gt 6 and sessionScope.currPageNo+1 eq sessionScope.totalPages-2}">	
+		<style>
+	        #five {
+	   	        border: 2px solid rgba(251, 0, 0, 0.72);
+	       	}	
+		</style>        
+	</c:if>
+	<c:if test="${sessionScope.totalPages gt 6 and sessionScope.currPageNo+1 eq sessionScope.totalPages-1}">	
+		<style>
+	        #six {
+	   	        border: 2px solid rgba(251, 0, 0, 0.72);
+	       	}	
+		</style>        
+	</c:if>
+	<c:if test="${sessionScope.totalPages gt 6 and sessionScope.currPageNo+1 eq sessionScope.totalPages}">	
+		<style>
+	        #seven {
+	   	        border: 2px solid rgba(251, 0, 0, 0.72);
+	       	}	
+		</style>        
+	</c:if>
+	
 </head>
 
 <body>
     <div id="user-content-container">
-
         <c:forEach var="student" items="${sessionScope.studentArr}">
             <div class="user-content">
                 <div class="row-header">
@@ -121,22 +158,48 @@
     </div>
 
     <div id="page_index">
-        <div class="svg_arrow_div">
-            <img src="src/main/webapp/svg/left-arrow.svg" alt="My Happy SVG" />
+        <div class="svg_arrow_div left-arrow">
+            <c:import url="svg/left-arrow.svg" />
         </div>
         <div class="arrow_mid">
-            <li id="one">1</li>
-            <li id="two">2</li>
-            <li>3</li>
-            <li> . . . </li>
-            <li>7</li>
-            <li>8</li>
-            <li>9</li>
+            <c:choose>
+                <c:when test="${sessionScope.totalPages gt 6 and sessionScope.currPageNo+1 gt 3 and sessionScope.currPageNo+1 lt sessionScope.totalPages-2}">
+                    <li>1</li>
+                    <li>2</li>
+                    <li>3</li>
+                    <li>..</li>
+                    <li id="between"> ${ sessionScope.currPageNo+1 } </li>
+                    <li>..</li>
+                    <li>${sessionScope.totalPages-2}</li>
+                    <li>${sessionScope.totalPages-1}</li>
+                    <li>${sessionScope.totalPages}</li>
+                </c:when>
+                <c:when test="${sessionScope.totalPages gt 6}">
+                    <li>1</li>
+                    <li>2</li>
+                    <li>3</li>
+                    <li> . . . </li>
+                    <li id="five">${sessionScope.totalPages-2}</li>
+                    <li id="six">${sessionScope.totalPages-1}</li>
+                    <li id="seven">${sessionScope.totalPages}</li>
+                </c:when>
+                <c:otherwise>
+                    <c:forEach var="pageNo" begin="1" end="${sessionScope.totalPages}">
+                        <li>${pageNo}</li>
+                    </c:forEach>
+                </c:otherwise>
+            </c:choose>
         </div>
-        <div class="svg_arrow_div">
-            <img src="src/main/webapp/svg/right-arrow.svg" alt="My Happy SVG" />
+        <div class="svg_arrow_div right-arrow">
+            <c:import url="svg/right-arrow.svg" />
         </div>
     </div>
+    
+    <form id="my-form" action="./second" method="post">
+        <input id="currPageNo" type="hidden" name="currPageNo" value="${sessionScope.currPageNo}">
+    </form>
+
+    <script type="text/javascript" src="<c:url value='../index.js'/>"></script>
 </body>
 
 </html>

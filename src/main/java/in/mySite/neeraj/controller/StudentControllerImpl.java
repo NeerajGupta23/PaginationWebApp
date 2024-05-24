@@ -51,12 +51,35 @@ public class StudentControllerImpl extends HttpServlet implements IStudentContro
 	}
 
 	private void secondRequest(HttpServletRequest request, HttpServletResponse response) {
-		// TODO Auto-generated method stub
+		Integer currPageNo = Integer.parseInt(request.getParameter("currPageNo"));
+		System.out.println(currPageNo);
 
+		HttpSession session = request.getSession();
+		Integer totalPages = (Integer) session.getAttribute("totalPages");
+
+		if (currPageNo < 0) {
+			currPageNo = 0;
+		} else if (currPageNo >= totalPages) {
+			currPageNo = totalPages - 1;
+		}
+
+		Integer pageSize = (Integer) session.getAttribute("pageSize");
+		Integer pageCount = pageSize * currPageNo;
+
+		session.setAttribute("totalPages", totalPages);
+		session.setAttribute("currPageNo", currPageNo);
+
+		List<StudentVO> rows = getRows(pageCount, pageSize);
+		session.setAttribute("studentArr", rows);
 	}
 
 	private void firstRequest(HttpServletRequest request, HttpServletResponse response, String forwardLocation) {
 		Integer pageSize = Integer.parseInt(request.getParameter("pageSize"));
+
+		if (pageSize <= 0) {
+			pageSize = 1;
+		}
+
 		Integer pageCount = 0;
 		Integer totalPages = getTotalPages(pageSize);
 
@@ -64,6 +87,7 @@ public class StudentControllerImpl extends HttpServlet implements IStudentContro
 		session.setAttribute("pageSize", pageSize);
 		session.setAttribute("pageCount", pageCount);
 		session.setAttribute("totalPages", totalPages);
+		session.setAttribute("currPageNo", 0);
 
 		List<StudentVO> rows = getRows(pageCount, pageSize);
 		if (rows.isEmpty()) {
